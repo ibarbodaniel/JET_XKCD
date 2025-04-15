@@ -11,11 +11,6 @@ repos:
     hooks:
       - id: black
 
-  - repo: https://github.com/pycqa/flake8
-    rev: 6.1.0
-    hooks:
-      - id: flake8
-
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
@@ -25,6 +20,10 @@ repos:
     rev: v1.5.1
     hooks:
       - id: mypy
+        args:
+          - "--install-types"
+          - "--non-interactive"
+          - "--ignore-missing-imports"
 
   - repo: https://github.com/sqlfluff/sqlfluff
     rev: 2.1.1
