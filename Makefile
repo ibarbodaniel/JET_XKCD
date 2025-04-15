@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 .RUN := poetry run
-.PROJECT_NAME := xkcd_pipeline
+.PROJECT_NAME := xkcd_pipelines
 
 .PHONY: help env-create env-destroy test format check
 
