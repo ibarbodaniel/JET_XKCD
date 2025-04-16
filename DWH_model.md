@@ -16,8 +16,8 @@ The ER Diagram visually represents the relationships between the `dim_comic` and
    Column Name | Data Type   | Description                       |
  |-------------|-------------|-----------------------------------|
  | `comic_id`  | INT         | Primary Key, unique identifier    |
- | `title`     | STRING      | Title of the comic                |
- | `safe_title`| STRING      | Safe title of the comic           |
+ | `title`     | TEXT        | Title of the comic                |
+ | `safe_title`| TEXT        | Safe title of the comic           |
  | `transcript`| TEXT        | Transcript of the comic           |
  | `alt`       | TEXT        | Alt text of the comic             |
  | `image_url` | TEXT        | URL of the comic image            |
