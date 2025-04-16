@@ -34,15 +34,15 @@ def test_does_table_exist_false(mocker, pipeline):
     mock_cursor.execute.assert_called_once()
 
 
-def test_get_latest_comic_safe_title_from_db(mocker, pipeline):
+def test_get_latest_comic_id_from_db(mocker, pipeline):
     # Mock the database connection and query result
     mock_cursor = MagicMock()
-    mock_cursor.fetchone.return_value = ["The Roads Both Taken"]
+    mock_cursor.fetchone.return_value = [100]
     mock_connection = mocker.patch("xkcd_pipelines.fetch_insert.psycopg2.connect")
     mock_connection.return_value.cursor.return_value = mock_cursor
 
-    result = pipeline.get_latest_comic_safe_title_from_db()
-    assert result == "The Roads Both Taken"
+    result = pipeline.get_latest_comic_id_from_db()
+    assert result == 100
     mock_cursor.execute.assert_called_once()
 
 
@@ -55,25 +55,6 @@ def test_fetch_comic_success(mocker, pipeline):
 
     result = pipeline.fetch_comic(1)
     assert result == {"num": 1, "safe_title": "Barrel - Part 1"}
-
-
-def test_find_comic_position_by_safe_title(mocker, pipeline):
-    # Mock API responses for multiple comics
-    def side_effect(url):
-        comic_id = int(url.split("/")[3])
-        if comic_id == 1:
-            return MagicMock(json=lambda: {"num": 1, "safe_title": "Barrel - Part 1"})
-        elif comic_id == 2:
-            return MagicMock(
-                json=lambda: {"num": 2, "safe_title": "The Roads Both Taken"}
-            )
-        else:
-            raise Exception("404 Not Found")
-
-    mocker.patch("xkcd_pipelines.fetch_insert.requests.get", side_effect=side_effect)
-
-    result = pipeline.find_comic_position_by_safe_title("The Roads Both Taken")
-    assert result == 2
 
 
 def test_insert_comic_into_db(mocker, pipeline):
@@ -99,3 +80,25 @@ def test_insert_comic_into_db(mocker, pipeline):
 
     pipeline.insert_comic_into_db(comic_data)
     mock_cursor.executemany.assert_called_once()
+
+
+def test_is_database_up_to_date_true(mocker, pipeline):
+    # Mock the database method to return the latest comic ID
+    mocker.patch.object(pipeline, "get_latest_comic_id_from_db", return_value=100)
+
+    # Mock the API method to return the latest comic with the same ID
+    mocker.patch.object(pipeline, "fetch_latest_comic", return_value={"num": 100})
+
+    # Assert that the database is up-to-date
+    assert pipeline.is_database_up_to_date() is True
+
+
+def test_is_database_up_to_date_false(mocker, pipeline):
+    # Mock the database method to return an outdated comic ID
+    mocker.patch.object(pipeline, "get_latest_comic_id_from_db", return_value=99)
+
+    # Mock the API method to return the latest comic with a newer ID
+    mocker.patch.object(pipeline, "fetch_latest_comic", return_value={"num": 100})
+
+    # Assert that the database is not up-to-date
+    assert pipeline.is_database_up_to_date() is False

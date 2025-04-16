@@ -1,0 +1,18 @@
+version: 1
+
+models:
+  - name: dim_comic
+    columns:
+      - name: comic_id
+        tests:
+          - not_null
+          - unique
+      - name: title
+        tests:
+          - not_null
+      - name: safe_title
+        tests:
+          - not_null
+      - name: date
+        tests:
+          - not_null

@@ -1,0 +1,10 @@
+name: 'xkcd'
+version: '1.0'
+config-version: 2
+
+profile: 'xkcd'
+
+model-paths: ["models"]
+
+vars:
+  schema: 'xkcd'

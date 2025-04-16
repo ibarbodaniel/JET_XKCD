@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: fact_comic
+    columns:
+      - name: comic_id
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('dim_comic')
+              field: comic_id
+      - name: views
+        tests:
+          - not_null
+      - name: cost
+        tests:
+          - not_null
+      - name: customer_reviews
+        tests:
+          - not_null

@@ -1,0 +1,27 @@
+
+version: 2
+
+sources:
+  - name: xkcd
+    database: jet_case
+    schema: xkcd
+    tables:
+      - name: comics
+        description: "XKCD comic data"
+        columns:
+          - name: comic_id
+            description: "The unique identifier for the comic."
+          - name: title
+            description: "The title of the comic."
+          - name: safe_title
+            description: "A safe version of the title, suitable for URLs."
+          - name: transcript
+            description: "The transcript of the comic, if available."
+          - name: alt
+            description: "The alt text for the comic, often humorous or informative."
+          - name: image_url
+            description: "The URL of the comic image."
+          - name: date
+            description: "The date the comic was published."
+          - name: news
+            description: "Any news related to the comic."
