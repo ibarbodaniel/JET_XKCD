@@ -19,8 +19,6 @@ default_args = {
     "start_date": days_ago(1),
     "email_on_failure": False,
     "email_on_retry": False,
-    "retries": 3,  # Retry up to 3 times
-    "retry_delay": timedelta(minutes=10),  # Wait 10 minutes between retries
 }
 
 dag = DAG(
@@ -78,4 +76,4 @@ test_dbt = BashOperator(
     bash_command="cd /Users/danielibarbo/JET_XKCD/xkcd_dbt_project/xkcd && dbt test",
 )
 
-run_xkcd_pipeline >> run_dbt >> test_dbt
+poll_for_new_comic_task >> run_xkcd_pipeline >> run_dbt >> test_dbt
