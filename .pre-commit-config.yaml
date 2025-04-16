@@ -24,9 +24,3 @@ repos:
           - "--install-types"
           - "--non-interactive"
           - "--ignore-missing-imports"
-
-  - repo: https://github.com/sqlfluff/sqlfluff
-    rev: 2.1.1
-    hooks:
-      - id: sqlfluff-lint
-      - id: sqlfluff-fix

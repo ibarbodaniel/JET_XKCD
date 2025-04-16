@@ -3,6 +3,7 @@ import time
 from datetime import timedelta
 
 from airflow import DAG
+from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 
@@ -38,16 +39,25 @@ def poll_for_new_comic():
     start_time = time.time()
 
     while time.time() - start_time < timeout:
-        latest_comic = pipeline.fetch_latest_comic()
+        latest_comic = pipeline.is_database_up_to_date()
         if latest_comic:
-            logging.info("New comic available. Proceeding with the pipeline.")
-            pipeline.main()
-            return
-        else:
             logging.info("No new comic available. Retrying in 5 minutes.")
             time.sleep(polling_interval)
+            return True
+        else:
+            logging.info("New comic available. Proceeding with the pipeline.")
+            pipeline.main()
 
     logging.warning("Polling timed out. No new comic available for the day.")
+    return False
+
+
+# Task to poll for new comic
+poll_for_new_comic_task = PythonOperator(
+    task_id="poll_for_new_comic",
+    python_callable=poll_for_new_comic,
+    dag=dag,
+)
 
 
 run_xkcd_pipeline = PythonOperator(
@@ -56,4 +66,16 @@ run_xkcd_pipeline = PythonOperator(
     dag=dag,
 )
 
-run_xkcd_pipeline
+# Task to run dbt transformations
+run_dbt = BashOperator(
+    task_id="run_dbt",
+    bash_command="cd /Users/danielibarbo/JET_XKCD/xkcd_dbt_project/xkcd && dbt run",
+)
+
+# Task to run dbt tests
+test_dbt = BashOperator(
+    task_id="test_dbt",
+    bash_command="cd /Users/danielibarbo/JET_XKCD/xkcd_dbt_project/xkcd && dbt test",
+)
+
+run_xkcd_pipeline >> run_dbt >> test_dbt
